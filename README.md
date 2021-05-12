@@ -1,11 +1,16 @@
 # Async demo
 
-show simple example of mocha/chai to test some async functions
+Show simple example of mocha/chai to test some async functions
+
+### getting started
+
+ - `git clone https://github.com/leonstafford/asyncdemo.git`
+ - `npm install`
 
 ### run tests
 
- - `./node_modules/.bin/mocha`
+ - `npm test`
 
 ### lint code
 
- - `./node_modules/.bin/eslint test/myasynctest.js`
+ - `npm run lint`
