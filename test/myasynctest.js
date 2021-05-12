@@ -14,16 +14,14 @@ const makeApiCall = async (host, path, method = 'GET', params) => {
   return response;
 };
 
+// I took out the try/catch from original reference code
+// the error we were trying to catch should trigger in this
+// promise's error state (my hunch, not verified)
 const getPluginDownloads = async (name) => {
   const path = `sites/${name}`;
   const host = 'http://api.wordpress.org';
-  try {
-    const response = await makeApiCall(host, path);
-    const json = JSON.parse(response.text);
-    return json;
-  } catch (error) {
-    console.log('error', error);
-  }
+  const response = await makeApiCall(host, path);
+  return JSON.parse(response.text);
 };
 
 chai.use(chaiAsPromised);
@@ -50,7 +48,8 @@ const myPromise = new Promise((resolve, reject) => {
 
 // out Mocha tests
 describe('Test asynchronous code', () => {
-  it('should return another output', async () =>
+  it('should return another output', async () => {
     // do a bunch of stuff, leading to the value/condition we want to assert on
-    expect(myPromise).to.eventually.equal('foo'));
+    expect(myPromise).to.eventually.equal('foo');
+  });
 });
