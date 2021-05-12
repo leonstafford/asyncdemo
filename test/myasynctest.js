@@ -28,7 +28,7 @@ describe('Test asynchronous code', () => {
   it('should return another output', async () =>{
 
     // do a bunch of stuff, leading to the value/condition we want to assert on
-    return expect(myPromise).to.eventually.equal("fooss");
+    return expect(myPromise).to.eventually.equal("foo");
 
   });
 });
