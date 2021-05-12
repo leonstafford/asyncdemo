@@ -14,3 +14,7 @@ Show simple example of mocha/chai to test some async functions
 ### lint code
 
  - `npm run lint`
+
+### auto fix linting issues
+
+ - `npm run fixlint`

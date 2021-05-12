@@ -1,5 +1,30 @@
 const chai = require('chai');
-const chaiAsPromised = require("chai-as-promised");
+const chaiAsPromised = require('chai-as-promised');
+const superagent = require('superagent');
+
+const makeApiCall = async (host, path, method = 'GET', params) => {
+  const url = `${host}/${path}`;
+  const request = superagent(method, url).redirects(0).timeout(30 * 1000);
+  let response;
+  if (params) {
+    response = await request.send(params);
+  } else {
+    response = await request;
+  }
+  return response;
+};
+
+const getPluginDownloads = async (name) => {
+  const path = `sites/${name}`;
+  const host = 'http://api.wordpress.org';
+  try {
+    const response = await makeApiCall(host, path);
+    const json = JSON.parse(response.text);
+    return json;
+  } catch (error) {
+    console.log('error', error);
+  }
+};
 
 chai.use(chaiAsPromised);
 
@@ -25,10 +50,7 @@ const myPromise = new Promise((resolve, reject) => {
 
 // out Mocha tests
 describe('Test asynchronous code', () => {
-  it('should return another output', async () =>{
-
+  it('should return another output', async () =>
     // do a bunch of stuff, leading to the value/condition we want to assert on
-    return expect(myPromise).to.eventually.equal("foo");
-
-  });
+    expect(myPromise).to.eventually.equal('foo'));
 });
