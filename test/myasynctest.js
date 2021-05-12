@@ -25,39 +25,59 @@ const getPluginDownloads = async (pluginName) => {
   const path = `stats/plugin/1.0/downloads.php?slug=/${pluginName}`;
   const host = 'http://api.wordpress.org';
   const response = await makeApiCall(host, path);
-  return JSON.parse(response.text);
+  return [
+    pluginName,
+    JSON.parse(response.text),
+  ];
 };
 
 // TODO: asynchronously fetch data from here for each plugin
 // get list of plugin downloads by day at:
 // http://api.wordpress.org/stats/plugin/1.0/downloads.php?slug=wordpress-seo
 
-// static list of plugins we want to get some data about from API
-const somePlugins = [
-  'wordpress-seo',
-  'statically',
-  'autoptimize',
-];
-
 // dummmy promise to test we know how to chain things up
-const myPromise = new Promise((resolve, reject) => {
+const getListOfPluginNames = new Promise((resolve, reject) => {
   setTimeout(() => {
     console.log('output from myPromise');
-    resolve('foo');
-    // by adjusting this timeout duration, we can see this promise
-    // outputting to console before/after typical wp.org API response
-    // time for fetching the downloads data
+    // static list of plugins we want to get some data about from API
+    resolve([
+      'wordpress-seo',
+      'statically',
+      'autoptimize',
+    ]);
+    // this will now delay anything happening, as we're waiting on
+    // the list of plugins to start off our API querying
   }, 3000);
 });
 
-// out Mocha tests
+// our Mocha tests
 describe('Test asynchronous code', () => {
   it('should return another output', async () => {
     // let's try doing a top level promise stuff here, then some more promises within it!
-    getPluginDownloads('autoptimize').then((response) => {
-      console.log(response);
-      expect(myPromise).to.eventually.equal('foo');
-    });
+    getListOfPluginNames
+      .then((pluginNames) => {
+        // return an array of promises by iterating each plugin name
+        // and making our async API request, which returns promise
+        return Promise.all(
+          pluginNames.map((pluginName) => getPluginDownloads(pluginName)),
+        );
+      }).then((results) => {
+        // destructure our resolved array for each API response promise
+        // we passed the pluginName along so we could use that again here
+        results.forEach(([pluginName, downloadData]) => {
+          console.log(`Download data for ${pluginName}:`);
+
+          // iterate each date's download data (object returned from WP API)
+          Object.entries(downloadData).forEach(([key, value]) => {
+            console.log('The date: ', key);
+            console.log('The downloads: ', value);
+          });
+        });
+      }).catch((error) => {
+        console.log(error);
+      });
+
+    // expect(myPromise).to.eventually.equal('foo');
 
     // do a bunch of stuff, leading to the value/condition we want to assert on
     // expect(myPromise).to.eventually.equal('foo');
