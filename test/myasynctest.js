@@ -22,7 +22,7 @@ const makeApiCall = async (host, path, method = 'GET', params) => {
 // the error we were trying to catch should trigger in this
 // promise's error state (my hunch, not verified)
 const getPluginDownloads = async (pluginName) => {
-  const path = `stats/plugin/1.0/downloads.php?slug=/${pluginName}`;
+  const path = `stats/plugin/1.0/downloads.php?slug=/${pluginName}&limit=5`;
   const host = 'http://api.wordpress.org';
   const response = await makeApiCall(host, path);
   return [
@@ -38,7 +38,6 @@ const getPluginDownloads = async (pluginName) => {
 // dummmy promise to test we know how to chain things up
 const getListOfPluginNames = new Promise((resolve, reject) => {
   setTimeout(() => {
-    console.log('output from myPromise');
     // static list of plugins we want to get some data about from API
     resolve([
       'wordpress-seo',
@@ -47,7 +46,7 @@ const getListOfPluginNames = new Promise((resolve, reject) => {
     ]);
     // this will now delay anything happening, as we're waiting on
     // the list of plugins to start off our API querying
-  }, 3000);
+  }, 100);
 });
 
 // our Mocha tests
@@ -64,15 +63,19 @@ describe('Test asynchronous code', () => {
       }).then((results) => {
         // destructure our resolved array for each API response promise
         // we passed the pluginName along so we could use that again here
+        console.log('Download data by plugins:');
         results.forEach(([pluginName, downloadData]) => {
-          console.log(`Download data for ${pluginName}:`);
+          console.log('');
+          console.log(`${pluginName}:`);
+          console.log('');
 
           // iterate each date's download data (object returned from WP API)
-          Object.entries(downloadData).forEach(([key, value]) => {
-            console.log('The date: ', key);
-            console.log('The downloads: ', value);
+          Object.entries(downloadData).forEach(([day, downloads]) => {
+            console.log(`On ${day}, there were ${downloads} downloads.`);
           });
         });
+
+        console.log('');
       }).catch((error) => {
         console.log(error);
       });
