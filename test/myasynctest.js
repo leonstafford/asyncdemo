@@ -1,4 +1,7 @@
 const chai = require('chai');
+const chaiAsPromised = require("chai-as-promised");
+
+chai.use(chaiAsPromised);
 
 const { expect } = chai;
 
@@ -25,11 +28,7 @@ describe('Test asynchronous code', () => {
   it('should return another output', async () =>{
 
     // do a bunch of stuff, leading to the value/condition we want to assert on
-    myPromise().then((result) => {
-      // implement result testing logic
-    });
+    return expect(myPromise).to.eventually.equal("fooss");
 
-    // our Chai assertion
-    expect(foo).to.be.a('string');
   });
 });
